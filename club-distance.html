@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club Distance Gapping — GolfCalc</title>
+<meta name="description" content="Golf club distance gapping calculator. Find distance gaps between clubs. Identify problem areas in your bag. Free tool.">
+<meta property="og:title" content="Club Distance Gapping — GolfCalc">
+<meta property="og:description" content="Golf club distance gapping calculator. Find distance gaps between clubs. Identify problem areas in your bag. Free tool.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thehivemakes.github.io/hive-golf-calc/club-distance.html">
+<link rel="stylesheet" href="style.css">
+<script src="js/calc-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Club Distance Gapping",
+  "url": "https://thehivemakes.github.io/hive-golf-calc/club-distance.html",
+  "description": "Golf club distance gapping calculator. Find distance gaps between clubs. Identify problem areas in your bag. Free tool.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any"
+}
+</script>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">Golf<span>Calc</span></div><div class="tagline">Free golf calculators</div></div></header>
+<nav><div class="nav-inner"><a href="index.html">GolfCalc</a><span class="sep">/</span><span>Club Distance Gapping</span></div></nav>
+<main>
+  <div class="ad-leaderboard" id="ad-top">Ad</div>
+  <div class="card">
+    <h1>Club Distance Gapping</h1>
+    <p class="subtitle">Enter your average distance for each club to visualize gaps.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="driver">Driver (yards)</label>
+        <input type="number" id="driver" step="5" placeholder="230">
+      </div>
+      <div class="field">
+        <label for="wood3">3-Wood (yards)</label>
+        <input type="number" id="wood3" step="5" placeholder="210">
+      </div>
+      <div class="field">
+        <label for="iron5">5-Iron (yards)</label>
+        <input type="number" id="iron5" step="5" placeholder="180">
+      </div>
+      <div class="field">
+        <label for="iron7">7-Iron (yards)</label>
+        <input type="number" id="iron7" step="5" placeholder="160">
+      </div>
+      <div class="field">
+        <label for="iron9">9-Iron (yards)</label>
+        <input type="number" id="iron9" step="5" placeholder="135">
+      </div>
+      <div class="field">
+        <label for="pw">PW (yards)</label>
+        <input type="number" id="pw" step="5" placeholder="120">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <div class="result" id="result">
+      <div class="result-row">
+        <span class="result-label">Distance gaps</span>
+        <span class="result-value" id="cd-gaps">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Average gap</span>
+        <span class="result-value" id="cd-avg-gap">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Gap analysis</span>
+        <span class="result-value" id="cd-issue">—</span>
+      </div>
+      <div class="result-note">Ideal gap between clubs: 10–15 yards. Gaps larger than 20 yards indicate a missing club or fitting issue. Gaps smaller than 8 yards suggest redundancy.</div>
+    </div>
+  </div>
+
+  <div class="ad-rectangle" id="ad-mid">Ad</div>
+  <div class="seo-section">
+    <h2>Analyzing Your Club Distance Gaps</h2>
+    <p>Distance gapping is the difference in carry distance between consecutive clubs. Consistent gaps of 10–15 yards give you full coverage of distances. Large gaps leave you "between clubs" too often.</p>
+    <p>If you have a 25-yard gap between your 3-wood and 5-iron, consider adding a hybrid or 4-iron. If two clubs go nearly the same distance, one may need adjusting or replacing.</p>
+  </div>
+</main>
+<footer>Free golf calculators. No signup, no tracking. For official handicap, use your club or GHIN.<br>Built by <a href="https://thehivemakes.github.io/" style="color:var(--accent)">The Hive</a></footer>
+<script>
+
+function calculate() {
+  const clubs = [
+    {id:'driver',name:'Driver'},{id:'wood3',name:'3-Wood'},
+    {id:'iron5',name:'5-Iron'},{id:'iron7',name:'7-Iron'},
+    {id:'iron9',name:'9-Iron'},{id:'pw',name:'PW'}
+  ];
+  const distances = [];
+  for (const c of clubs) {
+    const d = CalcCore.get(c.id);
+    if (!isNaN(d)&&d>0) distances.push({name:c.name,dist:d});
+  }
+  if (distances.length < 2) return;
+  distances.sort((a,b)=>b.dist-a.dist);
+
+  let gaps = [];
+  let totalGap = 0;
+  let issues = [];
+  for (let i=0; i<distances.length-1; i++) {
+    const gap = distances[i].dist - distances[i+1].dist;
+    gaps.push(distances[i].name + ' \u2192 ' + distances[i+1].name + ': ' + gap + ' yds');
+    totalGap += gap;
+    if (gap > 20) issues.push(distances[i].name + ' to ' + distances[i+1].name + ': ' + gap + 'yd gap (too large)');
+    if (gap < 8) issues.push(distances[i].name + ' to ' + distances[i+1].name + ': ' + gap + 'yd gap (redundant?)');
+  }
+
+  CalcCore.set('cd-gaps', gaps.join(' | '));
+  CalcCore.set('cd-avg-gap', CalcCore.fmt(totalGap/(distances.length-1),0) + ' yards average');
+  CalcCore.set('cd-issue', issues.length > 0 ? issues.join('. ') : 'All gaps look good (10\u201320 yards each)');
+  CalcCore.showResult();
+  CalcCore.saveParams(['driver','wood3','iron5','iron7','iron9','pw']);
+}
+
+function clearAll() {
+  ["driver", "wood3", "iron5", "iron7", "iron9", "pw"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = el.defaultValue || '';
+  });
+  document.getElementById('result').classList.remove('visible');
+  history.replaceState(null, '', window.location.pathname);
+}
+
+document.addEventListener('DOMContentLoaded', () => { if (window.location.search) calculate(); });
+</script>
+</body>
+</html>

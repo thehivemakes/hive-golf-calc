@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handicap Index Estimator — GolfCalc</title>
+<meta name="description" content="Golf handicap calculator. Estimate handicap index from recent scores using WHS formula. Free golf tool.">
+<meta property="og:title" content="Handicap Index Estimator — GolfCalc">
+<meta property="og:description" content="Golf handicap calculator. Estimate handicap index from recent scores using WHS formula. Free golf tool.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thehivemakes.github.io/hive-golf-calc/handicap.html">
+<link rel="stylesheet" href="style.css">
+<script src="js/calc-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Handicap Index Estimator",
+  "url": "https://thehivemakes.github.io/hive-golf-calc/handicap.html",
+  "description": "Golf handicap calculator. Estimate handicap index from recent scores using WHS formula. Free golf tool.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any"
+}
+</script>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">Golf<span>Calc</span></div><div class="tagline">Free golf calculators</div></div></header>
+<nav><div class="nav-inner"><a href="index.html">GolfCalc</a><span class="sep">/</span><span>Handicap Index Estimator</span></div></nav>
+<main>
+  <div class="ad-leaderboard" id="ad-top">Ad</div>
+  <div class="card">
+    <h1>Handicap Index Estimator</h1>
+    <p class="subtitle">Enter your last 5–20 adjusted gross scores and course/slope ratings.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="score1">Score 1 (adjusted gross)</label>
+        <input type="number" id="score1" step="1" placeholder="92">
+      </div>
+      <div class="field">
+        <label for="rating1">Course rating</label>
+        <input type="number" id="rating1" step="0.1" placeholder="71.5">
+      </div>
+      <div class="field">
+        <label for="slope1">Slope rating</label>
+        <input type="number" id="slope1" step="1" placeholder="128">
+      </div>
+      <div class="field">
+        <label for="score2">Score 2</label>
+        <input type="number" id="score2" step="1" placeholder="88">
+      </div>
+      <div class="field">
+        <label for="rating2">Course rating 2</label>
+        <input type="number" id="rating2" step="0.1" placeholder="70.2">
+      </div>
+      <div class="field">
+        <label for="slope2">Slope 2</label>
+        <input type="number" id="slope2" step="1" placeholder="125">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <div class="result" id="result">
+      <div class="result-row">
+        <span class="result-label">Score differential 1</span>
+        <span class="result-value" id="hc-diff1">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Score differential 2</span>
+        <span class="result-value" id="hc-diff2">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Average best differential</span>
+        <span class="result-value" id="hc-avg">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Estimated handicap index</span>
+        <span class="result-value" id="hc-index">—</span>
+      </div>
+      <div class="result-note">Differential = (113 / slope) × (score − course rating). WHS uses the best 8 of your last 20 differentials. This simplified version averages the differentials entered.</div>
+    </div>
+  </div>
+
+  <div class="ad-rectangle" id="ad-mid">Ad</div>
+  <div class="seo-section">
+    <h2>How Golf Handicap Index Works</h2>
+    <p>The World Handicap System (WHS) calculates your handicap index from your best score differentials. A differential measures how you performed relative to the course difficulty.</p>
+    <p>With 20 rounds, the WHS uses the average of your best 8 differentials. With fewer rounds, it uses fewer differentials. This calculator provides an estimate — for an official handicap, register with your golf association.</p>
+  </div>
+</main>
+<footer>Free golf calculators. No signup, no tracking. For official handicap, use your club or GHIN.<br>Built by <a href="https://thehivemakes.github.io/" style="color:var(--accent)">The Hive</a></footer>
+<script>
+
+function calculate() {
+  const diffs = [];
+  for (let i = 1; i <= 2; i++) {
+    const s = CalcCore.get('score'+i);
+    const r = CalcCore.get('rating'+i);
+    const sl = CalcCore.get('slope'+i);
+    if (!isNaN(s)&&!isNaN(r)&&!isNaN(sl)&&sl>0) {
+      diffs.push((113/sl)*(s-r));
+    }
+  }
+  if (diffs.length < 1) return;
+  diffs.sort((a,b)=>a-b);
+  const best = diffs.slice(0, Math.max(1, Math.floor(diffs.length * 0.4)));
+  const avg = best.reduce((a,b)=>a+b,0) / best.length;
+
+  for (let i = 0; i < diffs.length && i < 2; i++) {
+    CalcCore.set('hc-diff'+(i+1), CalcCore.fmt(diffs[i],1));
+  }
+  CalcCore.set('hc-avg', CalcCore.fmt(avg,1));
+  CalcCore.set('hc-index', CalcCore.fmt(avg,1));
+  CalcCore.showResult();
+  CalcCore.saveParams(['score1','rating1','slope1','score2','rating2','slope2']);
+}
+
+function clearAll() {
+  ["score1", "rating1", "slope1", "score2", "rating2", "slope2"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = el.defaultValue || '';
+  });
+  document.getElementById('result').classList.remove('visible');
+  history.replaceState(null, '', window.location.pathname);
+}
+
+document.addEventListener('DOMContentLoaded', () => { if (window.location.search) calculate(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Putting Break Estimator — GolfCalc</title>
+<meta name="description" content="Golf putting break calculator. Estimate putt break from slope and distance. Free green reading tool.">
+<meta property="og:title" content="Putting Break Estimator — GolfCalc">
+<meta property="og:description" content="Golf putting break calculator. Estimate putt break from slope and distance. Free green reading tool.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thehivemakes.github.io/hive-golf-calc/putting-break.html">
+<link rel="stylesheet" href="style.css">
+<script src="js/calc-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Putting Break Estimator",
+  "url": "https://thehivemakes.github.io/hive-golf-calc/putting-break.html",
+  "description": "Golf putting break calculator. Estimate putt break from slope and distance. Free green reading tool.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any"
+}
+</script>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">Golf<span>Calc</span></div><div class="tagline">Free golf calculators</div></div></header>
+<nav><div class="nav-inner"><a href="index.html">GolfCalc</a><span class="sep">/</span><span>Putting Break Estimator</span></div></nav>
+<main>
+  <div class="ad-leaderboard" id="ad-top">Ad</div>
+  <div class="card">
+    <h1>Putting Break Estimator</h1>
+    <p class="subtitle">Enter slope percentage and putt distance to estimate break.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="putt_dist">Putt distance (feet)</label>
+        <input type="number" id="putt_dist" step="1" placeholder="20">
+      </div>
+      <div class="field">
+        <label for="slope_pct">Slope grade (%)</label>
+        <input type="number" id="slope_pct" step="0.5" placeholder="2.0">
+      </div>
+      <div class="field">
+        <label for="green_speed">Green speed (stimpmeter)</label>
+        <select id="green_speed"><option value="8">8 (slow - municipal)</option><option value="10">10 (average)</option><option value="11">11 (fast)</option><option value="12">12 (tournament)</option><option value="13">13 (US Open)</option></select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <div class="result" id="result">
+      <div class="result-row">
+        <span class="result-label">Estimated break</span>
+        <span class="result-value" id="pb-break">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Aim point (from hole)</span>
+        <span class="result-value" id="pb-aim">—</span>
+      </div>
+      <div class="result-note">Break increases with slope, distance, and green speed. On faster greens, the ball curves more because it rolls slower. This is a simplified model — grain, moisture, and wind also affect break.</div>
+    </div>
+  </div>
+
+  <div class="ad-rectangle" id="ad-mid">Ad</div>
+  <div class="seo-section">
+    <h2>How to Read Putting Break</h2>
+    <p>Putting break depends on three factors: slope steepness, putt length, and green speed. Steeper slopes and faster greens produce more break. Longer putts break more because the ball is rolling slowly for a longer time.</p>
+    <p>This calculator provides a rough estimate. Real green reading also involves reading grain direction, identifying subtle undulations, and accounting for the ball's decelerating speed near the hole.</p>
+  </div>
+</main>
+<footer>Free golf calculators. No signup, no tracking. For official handicap, use your club or GHIN.<br>Built by <a href="https://thehivemakes.github.io/" style="color:var(--accent)">The Hive</a></footer>
+<script>
+
+function calculate() {
+  const dist = CalcCore.get('putt_dist');
+  const slope = CalcCore.get('slope_pct');
+  const speed = parseFloat(CalcCore.getSelect('green_speed'));
+  if (isNaN(dist)||isNaN(slope)||isNaN(speed)||dist<=0) return;
+
+  // Simplified break model: break (inches) ~ slope% * distance * speed_factor
+  const speedFactor = speed / 10;
+  const breakInches = slope * dist * 0.15 * speedFactor;
+  const breakFeet = breakInches / 12;
+
+  CalcCore.set('pb-break', CalcCore.fmt(breakInches, 1) + ' inches (' + CalcCore.fmt(breakFeet, 1) + ' ft)');
+  CalcCore.set('pb-aim', CalcCore.fmt(breakInches, 0) + ' inches ' + (slope > 0 ? 'above' : 'below') + ' the hole');
+  CalcCore.showResult();
+  CalcCore.saveParams(['putt_dist','slope_pct','green_speed']);
+}
+
+function clearAll() {
+  ["putt_dist", "slope_pct", "green_speed"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = el.defaultValue || '';
+  });
+  document.getElementById('result').classList.remove('visible');
+  history.replaceState(null, '', window.location.pathname);
+}
+
+document.addEventListener('DOMContentLoaded', () => { if (window.location.search) calculate(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swing Speed to Distance — GolfCalc</title>
+<meta name="description" content="Golf swing speed to distance calculator. Estimate carry distance from club head speed and smash factor. Free tool.">
+<meta property="og:title" content="Swing Speed to Distance — GolfCalc">
+<meta property="og:description" content="Golf swing speed to distance calculator. Estimate carry distance from club head speed and smash factor. Free tool.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thehivemakes.github.io/hive-golf-calc/swing-speed.html">
+<link rel="stylesheet" href="style.css">
+<script src="js/calc-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Swing Speed to Distance",
+  "url": "https://thehivemakes.github.io/hive-golf-calc/swing-speed.html",
+  "description": "Golf swing speed to distance calculator. Estimate carry distance from club head speed and smash factor. Free tool.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any"
+}
+</script>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">Golf<span>Calc</span></div><div class="tagline">Free golf calculators</div></div></header>
+<nav><div class="nav-inner"><a href="index.html">GolfCalc</a><span class="sep">/</span><span>Swing Speed to Distance</span></div></nav>
+<main>
+  <div class="ad-leaderboard" id="ad-top">Ad</div>
+  <div class="card">
+    <h1>Swing Speed to Distance</h1>
+    <p class="subtitle">Enter your swing speed to see expected carry distance and smash factor.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="clubhead_speed">Club head speed (mph)</label>
+        <input type="number" id="clubhead_speed" step="1" placeholder="95">
+      </div>
+      <div class="field">
+        <label for="smash_factor">Smash factor (ball speed / club speed)</label>
+        <input type="number" id="smash_factor" step="0.01" placeholder="1.48" value="1.48">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <div class="result" id="result">
+      <div class="result-row">
+        <span class="result-label">Ball speed</span>
+        <span class="result-value" id="ss-ball-speed">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Estimated carry distance</span>
+        <span class="result-value" id="ss-carry">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Estimated total distance (with roll)</span>
+        <span class="result-value" id="ss-total">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Smash factor rating</span>
+        <span class="result-value" id="ss-efficiency">—</span>
+      </div>
+      <div class="result-note">Ball speed = club speed × smash factor. Carry ≈ ball speed × 1.75. Tour average smash factor: 1.48–1.50. Max legal: 1.50. Below 1.44 indicates off-center hits.</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:16px;font-weight:700;margin-bottom:12px;">Swing Speed Benchmarks</h2>
+    <table class="ref-table" id="ref-table">
+      <thead><tr><th>Player</th><th>Club Speed</th><th>Ball Speed</th><th>Carry</th></tr></thead>
+      <tbody>
+        <tr><td>Senior amateur</td><td>80–90 mph</td><td>118–133</td><td>190–215 yds</td></tr>
+        <tr><td>Average male amateur</td><td>90–100 mph</td><td>133–148</td><td>215–240 yds</td></tr>
+        <tr><td>Low handicap</td><td>100–110 mph</td><td>148–163</td><td>240–270 yds</td></tr>
+        <tr><td>PGA Tour average</td><td>112–117 mph</td><td>166–173</td><td>275–295 yds</td></tr>
+        <tr><td>Long drive competitor</td><td>135–155 mph</td><td>200–230</td><td>340–400+ yds</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ad-rectangle" id="ad-mid">Ad</div>
+  <div class="seo-section">
+    <h2>Swing Speed and Driving Distance</h2>
+    <p>Club head speed is the primary determinant of driving distance. Every 1 mph of club speed adds approximately 2.5–3 yards of carry distance (with good contact).</p>
+    <p>Smash factor measures how efficiently energy transfers from the club to the ball. The theoretical maximum is 1.50. Most amateurs are between 1.40 and 1.48. Improving smash factor (hitting the center of the face) adds distance without swinging faster.</p>
+  </div>
+</main>
+<footer>Free golf calculators. No signup, no tracking. For official handicap, use your club or GHIN.<br>Built by <a href="https://thehivemakes.github.io/" style="color:var(--accent)">The Hive</a></footer>
+<script>
+
+function calculate() {
+  const cs = CalcCore.get('clubhead_speed');
+  const sf = CalcCore.get('smash_factor');
+  if (isNaN(cs)||isNaN(sf)||cs<=0||sf<=0) return;
+
+  const ballSpeed = cs * sf;
+  const carry = ballSpeed * 1.75;
+  const total = carry * 1.12;
+
+  let rating;
+  if (sf >= 1.48) rating = 'Excellent (tour-quality contact)';
+  else if (sf >= 1.44) rating = 'Good (solid contact)';
+  else if (sf >= 1.40) rating = 'Average (room for improvement)';
+  else rating = 'Below average (likely off-center hits)';
+
+  CalcCore.set('ss-ball-speed', CalcCore.fmt(ballSpeed, 0) + ' mph');
+  CalcCore.set('ss-carry', CalcCore.fmtInt(carry) + ' yards');
+  CalcCore.set('ss-total', CalcCore.fmtInt(total) + ' yards (est. with roll)');
+  CalcCore.set('ss-efficiency', sf.toFixed(2) + ' \u2014 ' + rating);
+  CalcCore.showResult();
+  CalcCore.saveParams(['clubhead_speed','smash_factor']);
+}
+
+function clearAll() {
+  ["clubhead_speed", "smash_factor"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = el.defaultValue || '';
+  });
+  document.getElementById('result').classList.remove('visible');
+  history.replaceState(null, '', window.location.pathname);
+}
+
+document.addEventListener('DOMContentLoaded', () => { if (window.location.search) calculate(); });
+</script>
+</body>
+</html>

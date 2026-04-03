@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Handicap (Slope Adjustment) — GolfCalc</title>
+<meta name="description" content="Golf course handicap calculator. Convert handicap index to course handicap using slope rating. Free tool.">
+<meta property="og:title" content="Course Handicap (Slope Adjustment) — GolfCalc">
+<meta property="og:description" content="Golf course handicap calculator. Convert handicap index to course handicap using slope rating. Free tool.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thehivemakes.github.io/hive-golf-calc/slope-adjustment.html">
+<link rel="stylesheet" href="style.css">
+<script src="js/calc-core.js"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Course Handicap (Slope Adjustment)",
+  "url": "https://thehivemakes.github.io/hive-golf-calc/slope-adjustment.html",
+  "description": "Golf course handicap calculator. Convert handicap index to course handicap using slope rating. Free tool.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Any"
+}
+</script>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">Golf<span>Calc</span></div><div class="tagline">Free golf calculators</div></div></header>
+<nav><div class="nav-inner"><a href="index.html">GolfCalc</a><span class="sep">/</span><span>Course Handicap (Slope Adjustment)</span></div></nav>
+<main>
+  <div class="ad-leaderboard" id="ad-top">Ad</div>
+  <div class="card">
+    <h1>Course Handicap (Slope Adjustment)</h1>
+    <p class="subtitle">Enter your index and course details to find your playing handicap.</p>
+    <div class="form-grid">
+      <div class="field">
+        <label for="sa_index">Handicap index</label>
+        <input type="number" id="sa_index" step="0.1" placeholder="14.2">
+      </div>
+      <div class="field">
+        <label for="sa_slope">Course slope rating</label>
+        <input type="number" id="sa_slope" step="1" placeholder="128">
+      </div>
+      <div class="field">
+        <label for="sa_rating">Course rating</label>
+        <input type="number" id="sa_rating" step="0.1" placeholder="71.5">
+      </div>
+      <div class="field">
+        <label for="sa_par">Course par</label>
+        <input type="number" id="sa_par" step="1" placeholder="72" value="72">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <div class="result" id="result">
+      <div class="result-row">
+        <span class="result-label">Course handicap</span>
+        <span class="result-value" id="sa-course-hc">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Playing handicap (95%)</span>
+        <span class="result-value" id="sa-playing-hc">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Target score</span>
+        <span class="result-value" id="sa-target">—</span>
+      </div>
+      <div class="result-note">Course Handicap = Index × (Slope / 113) + (Rating − Par). Playing Handicap = 95% of Course Handicap (for stroke play). Your target score = Par + Playing Handicap.</div>
+    </div>
+  </div>
+
+  <div class="ad-rectangle" id="ad-mid">Ad</div>
+  <div class="seo-section">
+    <h2>Converting Handicap Index to Course Handicap</h2>
+    <p>Your handicap index is portable — it represents your potential ability. The course handicap adjusts for the difficulty of the specific course you are playing.</p>
+    <p>A harder course (higher slope) gives you more strokes. The formula: Course Handicap = Index × (Slope / 113) + (Course Rating − Par). For stroke play, use 95% of course handicap.</p>
+  </div>
+</main>
+<footer>Free golf calculators. No signup, no tracking. For official handicap, use your club or GHIN.<br>Built by <a href="https://thehivemakes.github.io/" style="color:var(--accent)">The Hive</a></footer>
+<script>
+
+function calculate() {
+  const idx = CalcCore.get('sa_index');
+  const slope = CalcCore.get('sa_slope');
+  const rating = CalcCore.get('sa_rating');
+  const par = CalcCore.get('sa_par') || 72;
+  if (isNaN(idx)||isNaN(slope)||isNaN(rating)||slope<=0) return;
+  const courseHC = Math.round(idx * (slope/113) + (rating - par));
+  const playingHC = Math.round(courseHC * 0.95);
+  const target = par + playingHC;
+  CalcCore.set('sa-course-hc', courseHC);
+  CalcCore.set('sa-playing-hc', playingHC + ' (stroke play)');
+  CalcCore.set('sa-target', target + ' (' + par + ' + ' + playingHC + ')');
+  CalcCore.showResult();
+  CalcCore.saveParams(['sa_index','sa_slope','sa_rating','sa_par']);
+}
+
+function clearAll() {
+  ["sa_index", "sa_slope", "sa_rating", "sa_par"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = el.defaultValue || '';
+  });
+  document.getElementById('result').classList.remove('visible');
+  history.replaceState(null, '', window.location.pathname);
+}
+
+document.addEventListener('DOMContentLoaded', () => { if (window.location.search) calculate(); });
+</script>
+</body>
+</html>
