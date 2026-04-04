@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://golf.thehivemakes.com/</loc><priority>1.0</priority></url>
-  <url><loc>https://golf.thehivemakes.com/handicap.html</loc><priority>0.8</priority></url>
-  <url><loc>https://golf.thehivemakes.com/club-distance.html</loc><priority>0.8</priority></url>
-  <url><loc>https://golf.thehivemakes.com/slope-adjustment.html</loc><priority>0.8</priority></url>
-  <url><loc>https://golf.thehivemakes.com/putting-break.html</loc><priority>0.8</priority></url>
-  <url><loc>https://golf.thehivemakes.com/swing-speed.html</loc><priority>0.8</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/</loc><priority>1.0</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/handicap.html</loc><priority>0.8</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/club-distance.html</loc><priority>0.8</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/slope-adjustment.html</loc><priority>0.8</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/putting-break.html</loc><priority>0.8</priority></url>
+  <url><loc>https://thehivemakes.github.io/hive-golf-calc/swing-speed.html</loc><priority>0.8</priority></url>
 </urlset>
